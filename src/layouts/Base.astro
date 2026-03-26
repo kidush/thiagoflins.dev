@@ -1,0 +1,155 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Senior Software Engineer · Ruby on Rails · Backend & Cloud Infrastructure' } = Astro.props;
+const currentPath = Astro.url.pathname;
+
+const navLinks = [
+  { href: '/',        label: 'Home'   },
+  { href: '/resume',  label: 'Resume' },
+  { href: '/blog',    label: 'Blog'   },
+];
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content={description} />
+  <title>{title} · Thiago Lins</title>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="page nav-inner">
+      <a href="/" class="nav-brand">
+        <span class="nav-brand-name">Thiago Lins</span>
+        <span class="nav-brand-dot" />
+      </a>
+      <ul class="nav-links">
+        {navLinks.map(link => (
+          <li>
+            <a
+              href={link.href}
+              class:list={['nav-link', { active: currentPath === link.href || (link.href !== '/' && currentPath.startsWith(link.href)) }]}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </nav>
+
+  <!-- SLOT -->
+  <main>
+    <slot />
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="page footer-inner">
+      <span>Thiago Lins · Maceió, Brazil · {new Date().getFullYear()}</span>
+      <a href="https://linkedin.com/in/thiagoevan" target="_blank" rel="noopener">linkedin.com/in/thiagoevan ↗</a>
+    </div>
+  </footer>
+
+</body>
+</html>
+
+<style>
+  nav {
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(13,13,13,.92);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .nav-brand-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1rem;
+    color: #fff;
+    letter-spacing: -.01em;
+  }
+
+  .nav-brand-dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .nav-links {
+    display: flex;
+    list-style: none;
+    gap: 4px;
+  }
+
+  .nav-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 2px;
+    transition: color .2s, background .2s;
+  }
+
+  .nav-link:hover { color: var(--text); }
+
+  .nav-link.active {
+    color: var(--accent);
+    background: rgba(200, 240, 74, .07);
+  }
+
+  footer {
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+  }
+
+  .footer-inner {
+    padding: 32px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: .08em;
+  }
+
+  .footer-inner a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  @media (max-width: 480px) {
+    .nav-brand-name { font-size: .9rem; }
+    .footer-inner { flex-direction: column; gap: 8px; text-align: center; }
+  }
+</style>

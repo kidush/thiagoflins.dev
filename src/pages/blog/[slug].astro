@@ -1,0 +1,175 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection, getEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map(post => ({ params: { slug: post.slug } }));
+}
+
+const { slug } = Astro.params;
+const post = await getEntry('blog', slug as string);
+
+if (!post) return Astro.redirect('/blog');
+
+const { Content } = await post.render();
+
+const formatDate = (date: Date) =>
+  date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<Base title={post.data.title} description={post.data.description}>
+  <div class="page">
+    <header>
+      <a href="/blog" class="back-link">← All posts</a>
+      <div class="post-meta">
+        <span class="post-date">{formatDate(post.data.date)}</span>
+        {post.data.tags && post.data.tags.map((tag: string) => (
+          <span class="tag">{tag}</span>
+        ))}
+      </div>
+      <h1>{post.data.title}</h1>
+      {post.data.description && <p class="description">{post.data.description}</p>}
+    </header>
+
+    <article class="prose">
+      <Content />
+    </article>
+  </div>
+</Base>
+
+<style>
+  header {
+    padding: 64px 0 48px;
+    border-bottom: 1px solid var(--border);
+    max-width: 680px;
+    animation: fadeUp .7s ease both;
+  }
+
+  .back-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: .08em;
+    display: inline-block;
+    margin-bottom: 20px;
+    transition: color .2s;
+  }
+  .back-link:hover { color: var(--accent); }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+
+  .post-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: .08em;
+  }
+
+  h1 {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    line-height: 1.1;
+    letter-spacing: -.02em;
+    color: #fff;
+    margin-bottom: 10px;
+  }
+
+  .description { color: var(--muted); font-size: 15px; line-height: 1.6; }
+
+  /* PROSE */
+  .prose {
+    max-width: 680px;
+    padding: 48px 0 80px;
+    color: #b0b0b0;
+    font-size: 15.5px;
+    line-height: 1.85;
+    animation: fadeUp .6s ease .1s both;
+  }
+
+  .prose :global(h2) {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: #fff;
+    margin: 48px 0 16px;
+    letter-spacing: -.01em;
+  }
+
+  .prose :global(h3) {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: #ddd;
+    margin: 32px 0 12px;
+  }
+
+  .prose :global(p) { margin-bottom: 20px; }
+
+  .prose :global(a) {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .prose :global(code) {
+    font-family: 'DM Mono', monospace;
+    font-size: .85em;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    border-radius: 2px;
+    color: var(--accent2);
+  }
+
+  .prose :global(pre) {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px 24px;
+    overflow-x: auto;
+    margin: 24px 0;
+  }
+
+  .prose :global(pre code) {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: .88em;
+    color: #c8c8c8;
+  }
+
+  .prose :global(blockquote) {
+    border-left: 2px solid var(--accent);
+    padding-left: 20px;
+    margin: 24px 0;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .prose :global(ul), .prose :global(ol) {
+    padding-left: 20px;
+    margin-bottom: 20px;
+  }
+
+  .prose :global(li) { margin-bottom: 6px; }
+
+  .prose :global(hr) {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  .prose :global(img) {
+    max-width: 100%;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    margin: 24px 0;
+  }
+</style>

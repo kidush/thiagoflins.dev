@@ -1,17 +1,18 @@
 {
-  "name": "thiagoflins.dev",
-  "type": "module",
-  "version": "0.0.1",
-  "engines": {
-    "node": ">=22.12.0"
-  },
-  "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "astro": "^6.1.0"
-  }
+	"name": "thiagoflins.dev",
+	"type": "module",
+	"version": "0.0.1",
+	"engines": {
+		"pnpm": ">=10.32.1",
+		"node": ">=24.14.1"
+	},
+	"scripts": {
+		"dev": "astro dev",
+		"build": "astro build",
+		"preview": "astro preview",
+		"astro": "astro"
+	},
+	"dependencies": {
+		"astro": "^6.1.0"
+	}
 }

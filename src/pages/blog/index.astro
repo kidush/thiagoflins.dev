@@ -1,0 +1,127 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const formatDate = (date: Date) =>
+  date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+---
+
+<Base title="Blog">
+  <div class="page">
+    <header>
+      <p class="hero-label">Writing</p>
+      <h1>Blog</h1>
+      <p class="tagline">Thoughts on Ruby, distributed systems, infrastructure, and engineering in general.</p>
+    </header>
+
+    <div class="posts-wrap">
+      {posts.length === 0 ? (
+        <div class="empty">
+          <p>No posts yet — check back soon.</p>
+          <p class="empty-hint">Drop a <code>.md</code> file in <code>src/content/blog/</code> to publish your first post.</p>
+        </div>
+      ) : (
+        <ul class="post-list">
+          {posts.map(post => (
+            <li class="post-item">
+              <a href={`/blog/${post.slug}`} class="post-link">
+                <div class="post-meta">
+                  <span class="post-date">{formatDate(post.data.date)}</span>
+                  {post.data.tags && post.data.tags.map((tag: string) => (
+                    <span class="tag">{tag}</span>
+                  ))}
+                </div>
+                <h2 class="post-title">{post.data.title}</h2>
+                {post.data.description && <p class="post-desc">{post.data.description}</p>}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
+</Base>
+
+<style>
+  header {
+    padding: 80px 0 52px;
+    border-bottom: 1px solid var(--border);
+    animation: fadeUp .7s ease both;
+  }
+
+  .hero-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    line-height: 1.05;
+    letter-spacing: -.02em;
+    color: #fff;
+    margin-bottom: 10px;
+  }
+
+  .tagline { color: var(--muted); font-size: 14px; }
+
+  .posts-wrap { padding: 48px 0; }
+
+  .empty {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .empty-hint { margin-top: 8px; font-family: 'DM Mono', monospace; font-size: 12px; }
+  .empty-hint code { color: var(--accent); }
+
+  .post-list { list-style: none; }
+
+  .post-item {
+    border-bottom: 1px solid var(--border);
+    animation: fadeUp .5s ease both;
+  }
+  .post-item:first-child { border-top: 1px solid var(--border); }
+
+  .post-link {
+    display: block;
+    padding: 28px 0;
+    text-decoration: none;
+    transition: padding-left .2s;
+  }
+  .post-link:hover { padding-left: 6px; }
+
+  .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  .post-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: .08em;
+  }
+
+  .post-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+    font-weight: 400;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    transition: color .2s;
+  }
+  .post-link:hover .post-title { color: var(--accent); }
+
+  .post-desc { font-size: 13.5px; color: #7a7a7a; line-height: 1.6; }
+</style>
